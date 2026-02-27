@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sytem_Boot_v35.0</title>
+    <title>Yajiro_OS_v35_Final_Level</title>
     <style>
         :root {
-            --mac-bg: #1e1e1e;
+            --mac-bg: #121212;
             --mac-font: #00ff41;
-            --mac-header: #3a3a3a;
+            --mario-brick: #e75e35;
         }
 
         body {
-            background-color: #000;
+            background-color: #050505;
             color: var(--mac-font);
             font-family: 'Courier New', Courier, monospace;
             display: flex;
@@ -24,219 +24,129 @@
         }
 
         #terminal {
-            width: 80%;
-            max-width: 800px;
-            height: 500px;
+            width: 90%;
+            max-width: 900px;
+            height: 550px;
             background: var(--mac-bg);
-            border-radius: 10px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border-radius: 8px;
+            box-shadow: 0 0 40px rgba(0, 255, 65, 0.2);
             display: flex;
             flex-direction: column;
-            border: 1px solid #444;
+            position: relative;
         }
 
         #header {
-            background: var(--mac-header);
-            padding: 10px;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
+            background: #333;
+            padding: 8px 15px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
             display: flex;
-            gap: 8px;
+            align-items: center;
         }
 
-        .dot { width: 12px; height: 12px; border-radius: 50%; }
-        .red { background: #ff5f56; }
-        .yellow { background: #ffbd2e; }
-        .green { background: #27c93f; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
+        .red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
 
         #content {
             padding: 20px;
-            overflow-y: auto;
+            overflow: hidden;
             flex-grow: 1;
-            font-size: 14px;
-            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
         }
 
-        .input-area { display: none; }
-        input {
-            background: transparent;
-            border: none;
-            color: var(--mac-font);
-            outline: none;
-            font-family: inherit;
-            font-size: inherit;
-        }
-
-        /* Animación del Fantasmita */
-        #game-canvas {
-            display: none;
-            margin-top: 20px;
-            border-bottom: 2px solid #555;
+        /* ESCENA DE MARIO */
+        #stage {
             position: relative;
-            height: 150px;
+            height: 250px;
+            border-bottom: 4px solid #555;
+            margin-top: 20px;
+            background: linear-gradient(to bottom, #000 70%, #111 100%);
+            display: none;
         }
 
-        .cube {
+        .brick {
             position: absolute;
             width: 40px;
             height: 40px;
-            background: #8b4513;
-            border: 2px solid #5d2e0a;
-            bottom: 0;
+            background: var(--mario-brick);
+            border: 2px solid #000;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: white;
             font-weight: bold;
+            color: #000;
+            box-shadow: inset 3px -3px 0px #8b341a;
+        }
+
+        #pole {
+            position: absolute;
+            width: 4px;
+            height: 180px;
+            background: #ddd;
+            right: 60px;
+            bottom: 0;
+        }
+
+        #flag {
+            position: absolute;
+            width: 30px;
+            height: 20px;
+            background: #00ff41;
+            right: 64px;
+            bottom: 160px;
+            transition: bottom 1s;
         }
 
         #ghost {
             position: absolute;
-            font-size: 30px;
-            bottom: 42px;
-            left: 50px;
-            transition: all 1s ease-in-out;
+            font-size: 35px;
+            bottom: 0;
+            left: 10px;
+            z-index: 10;
+            transition: all 0.5s ease-out;
         }
 
-        .cursor {
-            display: inline-block;
-            width: 8px;
+        /* FUEGOS ARTIFICIALES */
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--mac-font);
+            border-radius: 50%;
+        }
+
+        #countdown {
+            color: #ffbd2e;
+            font-size: 20px;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        #progress-bar {
+            width: 0%;
             height: 15px;
             background: var(--mac-font);
-            animation: blink 0.7s infinite;
+            margin-top: 10px;
+            box-shadow: 0 0 10px var(--mac-font);
         }
-
-        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
 <div id="terminal">
     <div id="header">
-        <div class="dot red"></div>
-        <div class="dot yellow"></div>
-        <div class="dot green"></div>
-        <span style="color: #999; font-size: 12px; margin-left: 10px;">bash — 80x24</span>
+        <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+        <span style="color:#aaa; font-size:12px; margin-left:10px;">zsh — Loading_Bday_Sequence</span>
     </div>
     <div id="content">
-        <div id="log"></div>
-        <div id="auth-area" class="input-area">
-            <br>SISTEMA BLOQUEADO.
-            <br>Ingrese Password: <input type="password" id="passInput" autofocus>
+        <div id="console-output"></div>
+        <div id="progress-bar-container" style="border: 1px solid #333; margin-top:10px; display:none;">
+            <div id="progress-bar"></div>
         </div>
-        <div id="final-zone">
-            <div id="game-canvas">
-                <div class="cube" style="left: 0px; bottom: 0px;">1</div>
-                <div class="cube" style="left: 45px; bottom: 45px;">2</div>
-                <div class="cube" style="left: 90px; bottom: 90px;">3</div>
-                <div class="cube" style="left: 135px; bottom: 135px;">4</div>
-                <div id="ghost">👻</div>
-            </div>
-            <div id="countdown" style="margin-top: 10px; color: #ffbd2e;"></div>
-            <div id="birthday-msg" style="font-weight: bold; font-size: 18px;"></div>
-        </div>
-    </div>
-</div>
 
-<script>
-    const log = document.getElementById('log');
-    const authArea = document.getElementById('auth-area');
-    const passInput = document.getElementById('passInput');
-    const gameCanvas = document.getElementById('game-canvas');
-    const ghost = document.getElementById('ghost');
-    const countdownDisp = document.getElementById('countdown');
-
-    const lines = [
-        "Initializing macOS Kernel x86_64...",
-        "Loading modules: [fs, net, crypto, bday_logic]",
-        "Checking hardware integrity... OK",
-        "Establishing secure connection to Birthday_Server...",
-        "User detected: AGENT_YAJIRO",
-        "STATUS: Access Restricted."
-    ];
-
-    let i = 0;
-    function printLog() {
-        if (i < lines.length) {
-            log.innerHTML += "> " + lines[i] + "<br>";
-            i++;
-            setTimeout(printLog, 600);
-        } else {
-            authArea.style.display = "block";
-            passInput.focus();
-        }
-    }
-
-    passInput.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            if (this.value === 'Yajiro') {
-                authArea.style.display = "none";
-                startInstallation();
-            } else {
-                alert("ACCESO DENEGADO. Intenta de nuevo.");
-                this.value = "";
-            }
-        }
-    });
-
-    function startInstallation() {
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += Math.floor(Math.random() * 10) + 2;
-            if (progress > 100) progress = 100;
-            log.innerHTML = `> Instalando Actualización de Vida v35.0... [${progress}%]`;
-            
-            if (progress === 100) {
-                clearInterval(interval);
-                log.innerHTML += "<br>> ¡INSTALACIÓN COMPLETADA CON ÉXITO!";
-                runFinalSequence();
-            }
-        }, 150);
-    }
-
-    function runFinalSequence() {
-        gameCanvas.style.display = "block";
-        
-        // Animación de salto del fantasmita del escalón 2 al 3
-        setTimeout(() => {
-            // Posición inicial (escalón 2)
-            ghost.style.left = "45px";
-            ghost.style.bottom = "87px";
-            
-            setTimeout(() => {
-                // Salto al escalón 3
-                ghost.style.left = "90px";
-                ghost.style.bottom = "132px";
-                log.innerHTML += "<br>> Saltando de los 34 a los 35... ¡Nivel alcanzado!";
-            }, 1000);
-        }, 1000);
-
-        startCountdown();
-    }
-
-    function startCountdown() {
-        const targetDate = new Date();
-        targetDate.setDate(targetDate.getDate() + 1);
-        targetDate.setHours(0, 0, 0, 0);
-
-        setInterval(() => {
-            const now = new Date().getTime();
-            const distance = targetDate - now;
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            countdownDisp.innerHTML = `T-MINUS: ${hours}h ${minutes}m ${seconds}s para el despliegue total.`;
-            
-            if (distance < 0) {
-                countdownDisp.innerHTML = "¡SISTEMA ACTUALIZADO: FELIZ CUMPLEAÑOS!";
-                document.getElementById('birthday-msg').innerHTML = "HAPPY_BIRTHDAY_YAJIRO.exe executed!";
-            }
-        }, 1000);
-    }
-
-    printLog();
-</script>
-
-</body>
-</html>
+        <div id="stage">
+            <div class="brick" style="bottom: 0; left: 50px;">1</div>
+            <div class="brick" style="bottom: 40px; left: 90px;">2</div>
+            <div class="brick" style="bottom: 80px; left: 130px;">3</div>
+            <div class="brick" style="
