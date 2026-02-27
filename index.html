@@ -73,38 +73,44 @@
         /* ESCENA DE MARIO */
         #stage {
             position: relative;
-            height: 280px;
+            height: 250px;
             border-bottom: 5px solid #222;
             margin-top: 20px;
             background: var(--sky-night);
             display: none;
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: hidden;
             border-radius: 5px;
+            white-space: nowrap;
         }
 
         .brick {
             position: absolute;
-            width: 45px;
-            height: 45px;
+            width: 35px;
+            height: 35px;
             background: var(--mario-brick);
             border: 2px solid #000;
+            box-sizing: border-box;
             display: flex;
             justify-content: center;
             align-items: center;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 14px;
             color: #ffd700;
             text-shadow: 1px 1px 0 #000;
-            box-shadow: inset 4px -4px 0px rgba(0,0,0,0.5), inset -4px 4px 0px rgba(255,255,255,0.2);
+            box-shadow: inset 3px -3px 0px rgba(0,0,0,0.5), inset -3px 3px 0px rgba(255,255,255,0.2);
             z-index: 2;
         }
+        
+        /* Oculta el texto en los ladrillos de relleno */
+        .brick.fill { color: transparent; text-shadow: none; }
 
         #pole {
             position: absolute;
             width: 6px;
-            height: 200px;
+            height: 180px;
             background: #aaa;
-            right: 120px;
+            left: 230px;
             bottom: 0;
             z-index: 1;
             border-radius: 3px 3px 0 0;
@@ -113,72 +119,65 @@
 
         .pole-top {
             position: absolute;
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             background: #ffd700;
             border-radius: 50%;
-            top: -8px;
-            left: -5px;
+            top: -7px;
+            left: -4px;
         }
 
         #flag {
             position: absolute;
-            width: 40px;
+            width: 35px;
             height: 25px;
             background: #00ff41;
-            right: 126px;
-            bottom: 175px;
-            transition: bottom 1.5s ease-in;
+            left: 195px; /* Del lado izquierdo del poste */
+            bottom: 155px;
             z-index: 2;
         }
 
         #castle {
             position: absolute;
-            right: 10px;
+            left: 270px;
             bottom: 0;
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             background: #555;
             z-index: 1;
             border: 2px solid #111;
         }
-        #castle::before {
-            content: '';
-            position: absolute;
-            top: -20px; left: 10px;
-            width: 20px; height: 20px;
+        #castle::before, #castle::after {
+            content: ''; position: absolute; top: -15px; width: 15px; height: 15px;
             background: #555; border: 2px solid #111;
         }
-        #castle::after {
-            content: '';
-            position: absolute;
-            top: -20px; right: 10px;
-            width: 20px; height: 20px;
-            background: #555; border: 2px solid #111;
-        }
+        #castle::before { left: 5px; }
+        #castle::after { right: 5px; }
         .castle-door {
             position: absolute;
-            bottom: 0; left: 25px;
-            width: 30px; height: 40px;
+            bottom: 0; left: 22px;
+            width: 26px; height: 35px;
             background: #000;
-            border-radius: 15px 15px 0 0;
+            border-radius: 13px 13px 0 0;
         }
 
-        #ghost {
+        /* Contenedores para físicas separadas (X y Y) = salto perfecto */
+        #ghost-x {
             position: absolute;
-            font-size: 40px;
             bottom: 0;
-            left: 10px;
+            left: 0;
             z-index: 10;
-            /* Curva de bézier para simular un pequeño salto en cada movimiento */
-            transition: bottom 0.5s cubic-bezier(0.25, 1, 0.5, 1), left 0.5s linear;
+        }
+        #ghost-y {
+            font-size: 35px;
+            line-height: 35px;
         }
 
         /* FUEGOS ARTIFICIALES */
         .firework {
             position: absolute;
-            width: 5px;
-            height: 5px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             pointer-events: none;
             z-index: 20;
@@ -186,18 +185,18 @@
 
         #countdown {
             color: #ffbd2e;
-            font-size: 22px;
+            font-size: 20px;
             text-align: center;
-            margin-top: 20px;
+            margin-top: 15px;
             font-weight: bold;
             text-shadow: 0 0 5px #ffbd2e;
         }
 
         #progress-bar {
             width: 0%;
-            height: 20px;
+            height: 15px;
             background: var(--mac-font);
-            box-shadow: 0 0 15px var(--mac-font);
+            box-shadow: 0 0 10px var(--mac-font);
             transition: width 0.1s linear;
         }
     </style>
@@ -207,61 +206,65 @@
 <div id="terminal">
     <div id="header">
         <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
-        <span style="color:#aaa; font-size:13px; margin-left:10px; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">root@Yajiro-MacBook-Pro:~</span>
+        <span style="color:#aaa; font-size:13px; margin-left:10px;">root@Yajiro-System:~</span>
     </div>
     <div id="content">
         <div id="console-output"></div>
-        <div id="progress-bar-container" style="border: 1px solid #444; margin-top:15px; display:none; border-radius:3px; overflow:hidden;">
+        <div id="progress-bar-container" style="border: 1px solid #444; margin-top:10px; display:none; border-radius:3px; overflow:hidden;">
             <div id="progress-bar"></div>
         </div>
 
         <div id="stage">
-            <div class="brick" style="bottom: 0; left: 40px;">1</div>
-            <div class="brick" style="bottom: 45px; left: 90px;">2</div>
-            <div class="brick" style="bottom: 90px; left: 140px;">3</div>
-            <div class="brick" style="bottom: 135px; left: 190px;">4</div>
+            <div class="brick" style="left: 35px; bottom: 0;">10</div>
             
-            <div id="pole">
-                <div class="pole-top"></div>
-            </div>
+            <div class="brick" style="left: 70px; bottom: 35px;">20</div>
+            <div class="brick fill" style="left: 70px; bottom: 0;"></div>
+
+            <div class="brick" style="left: 105px; bottom: 70px;">30</div>
+            <div class="brick fill" style="left: 105px; bottom: 35px;"></div>
+            <div class="brick fill" style="left: 105px; bottom: 0;"></div>
+
+            <div class="brick" style="left: 140px; bottom: 105px;">34</div>
+            <div class="brick fill" style="left: 140px; bottom: 70px;"></div>
+            <div class="brick fill" style="left: 140px; bottom: 35px;"></div>
+            <div class="brick fill" style="left: 140px; bottom: 0;"></div>
+            
+            <div id="pole"><div class="pole-top"></div></div>
             <div id="flag"></div>
             
-            <div id="castle">
-                <div class="castle-door"></div>
-            </div>
+            <div id="castle"><div class="castle-door"></div></div>
 
-            <div id="ghost">👻</div>
+            <div id="ghost-x"><div id="ghost-y">👻</div></div>
         </div>
 
         <div id="countdown"></div>
-        <div id="final-msg" style="text-align:center; margin-top:10px; font-size: 24px; color: #fff;"></div>
+        <div id="final-msg" style="text-align:center; margin-top:10px; font-size: 22px; color: #fff;"></div>
     </div>
 </div>
 
 <script>
     const output = document.getElementById('console-output');
     const stage = document.getElementById('stage');
-    const ghost = document.getElementById('ghost');
+    const ghostX = document.getElementById('ghost-x');
+    const ghostY = document.getElementById('ghost-y');
     const flag = document.getElementById('flag');
     const progressBar = document.getElementById('progress-bar');
     const barContainer = document.getElementById('progress-bar-container');
 
     const logs = [
-        "Inicializando Yajiro_Kernel_v35...",
-        "Bypass de seguridad biométrica... [ÉXITO]",
-        "Cargando memorias pasadas (0 - 34 años)...",
-        "Compilando update_de_vida.exe...",
-        "Desplegando Motor Gráfico de 8-bits..."
+        "Iniciando Protocolo_Cumpleaños_v35...",
+        "Validando décadas: [10 OK] [20 OK] [30 OK]...",
+        "Bypass de tiempo detectado. Edad actual: 34...",
+        "Renderizando motor gráfico avanzado..."
     ];
 
     let lineIdx = 0;
     function printLogs() {
         if (lineIdx < logs.length) {
             output.innerHTML += `> ${logs[lineIdx]}<br>`;
-            // Añadir cursor a la última línea
             output.innerHTML = output.innerHTML.replace('<span class="typing-cursor"></span>', '') + '<span class="typing-cursor"></span>';
             lineIdx++;
-            setTimeout(printLogs, 600);
+            setTimeout(printLogs, 500);
         } else {
             document.querySelector('.typing-cursor').remove();
             barContainer.style.display = 'block';
@@ -272,76 +275,91 @@
     function startLoading() {
         let width = 0;
         const interval = setInterval(() => {
-            width += Math.random() * 5; // Carga irregular tipo terminal real
+            width += Math.random() * 8;
             if(width > 100) width = 100;
             progressBar.style.width = width + '%';
             if (width >= 100) {
                 clearInterval(interval);
-                output.innerHTML += "<br>> SISTEMA ACTUALIZADO. PREPARANDO SALTO EVOLUTIVO...<br>";
-                setTimeout(startAnimation, 800);
+                output.innerHTML += "<br>> SISTEMA LISTO. INICIANDO SECUENCIA DE SALTO...<br>";
+                setTimeout(startAnimation, 600);
             }
         }, 50);
+    }
+
+    // Motor de salto parabólico (Calidad Super Excelente)
+    async function arcJump(startX, startY, endX, endY, jumpHeight, duration) {
+        // Animación horizontal (lineal)
+        ghostX.animate([
+            { transform: `translateX(${startX}px)` },
+            { transform: `translateX(${endX}px)` }
+        ], { duration, easing: 'linear', fill: 'forwards' });
+
+        // Animación vertical (parábola real con ease-out subiendo y ease-in bajando)
+        const peakY = Math.max(startY, endY) + jumpHeight;
+        const animY = ghostY.animate([
+            { transform: `translateY(-${startY}px)`, easing: 'ease-out' },
+            { transform: `translateY(-${peakY}px)`, easing: 'ease-in' },
+            { transform: `translateY(-${endY}px)` }
+        ], { duration, fill: 'forwards' });
+
+        return animY.finished;
     }
 
     async function startAnimation() {
         stage.style.display = 'block';
         
-        const steps = [
-            {b: 45, l: 40},   // Escalón 1
-            {b: 90, l: 90},   // Escalón 2
-            {b: 135, l: 140}, // Escalón 3 (Salto hacia los 35)
-            {b: 180, l: 190}  // Escalón 4
+        // Coordenadas base (tamaño bloque = 35px)
+        // Escalones: (X, Y)
+        const jumps = [
+            { sx: 0, sy: 0, ex: 35, ey: 35, h: 30, t: 400 },    // Suelo a 10
+            { sx: 35, sy: 35, ex: 70, ey: 70, h: 30, t: 400 },  // 10 a 20
+            { sx: 70, sy: 70, ex: 105, ey: 105, h: 30, t: 400 },// 20 a 30
+            { sx: 105, sy: 105, ex: 140, ey: 140, h: 30, t: 400 } // 30 a 34
         ];
 
-        // Saltos escalón por escalón
-        for (let i = 0; i < steps.length; i++) {
-            await new Promise(r => setTimeout(r, 600));
-            // Hacemos el salto (sube un poco en Y y luego cae en su posición)
-            ghost.style.bottom = (steps[i].b + 20) + 'px'; 
-            setTimeout(() => {
-                ghost.style.bottom = (steps[i].b + 5) + 'px';
-            }, 250);
-            ghost.style.left = steps[i].l + 'px';
-            
-            if(i === 2) {
-                output.innerHTML += "<br>> Ejecutando salto maestro a Nivel 35...";
-            }
+        // Ejecutar subida de escaleras
+        for (let j of jumps) {
+            await new Promise(r => setTimeout(r, 200)); // pausa entre saltos
+            await arcJump(j.sx, j.sy, j.ex, j.ey, j.h, j.t);
         }
 
-        // Gran salto hacia la bandera
-        await new Promise(r => setTimeout(r, 800));
-        const poleLeft = document.getElementById('pole').offsetLeft;
+        output.innerHTML += "<br>> ¡NIVEL 34 SUPERADO! EJECUTANDO SALTO AL MÁSTIL...<br>";
+        await new Promise(r => setTimeout(r, 500));
+
+        // El gran salto a la bandera (35)
+        // El mástil está en x=230. El fantasma mide 35, lo centramos agarrando el mástil.
+        await arcJump(140, 140, 215, 140, 60, 600);
+
+        // Deslizarse por la bandera
+        const slideDuration = 1000;
+        ghostY.animate([{ transform: `translateY(-140px)` }, { transform: `translateY(0px)` }], { duration: slideDuration, fill: 'forwards' });
+        flag.animate([{ transform: `translateY(0px)` }, { transform: `translateY(155px)` }], { duration: slideDuration, fill: 'forwards' });
         
-        ghost.style.transition = "bottom 0.8s cubic-bezier(0.25, 1, 0.5, 1), left 0.8s linear";
-        ghost.style.bottom = '220px'; // Salto alto
-        ghost.style.left = (poleLeft - 40) + 'px'; // Llegada a la bandera
+        await new Promise(r => setTimeout(r, slideDuration + 200));
+
+        // Correr al castillo (Castillo en 270)
+        const runAnim = ghostX.animate([
+            { transform: `translateX(215px)` },
+            { transform: `translateX(285px)` }
+        ], { duration: 800, fill: 'forwards' });
+
+        await runAnim.finished;
+
+        // Entrar al castillo (desaparecer)
+        ghostX.style.opacity = '0';
         
         setTimeout(() => {
-            // Se desliza por la bandera
-            ghost.style.transition = "bottom 1.5s ease-in";
-            ghost.style.bottom = "0px";
-            flag.style.bottom = "0px"; // La bandera baja con él
-            
-            // Corre hacia el castillo y desaparece
-            setTimeout(() => {
-                ghost.style.transition = "left 1s linear";
-                ghost.style.left = (poleLeft + 80) + 'px'; // Hacia la puerta
-                
-                setTimeout(() => {
-                    ghost.style.opacity = '0'; // Entra al castillo
-                    fireworksShow();
-                    document.getElementById('final-msg').innerHTML = "¡FELIZ CUMPLEAÑOS YAJIRO! <br><span style='font-size:16px; color:#00ff41;'>[LEVEL 35 COMPLETED]</span>";
-                    startCountdown();
-                }, 1000);
-            }, 1600);
-        }, 800);
+            fireworksShow();
+            document.getElementById('final-msg').innerHTML = "¡FELIZ CUMPLEAÑOS YAJIRO! <br><span style='font-size:16px; color:#00ff41;'>[LEVEL 35 UNLOCKED]</span>";
+            startCountdown();
+        }, 500);
     }
 
     function fireworksShow() {
         const colors = ['#00ff41', '#ffbd2e', '#ff5f56', '#ffd700', '#00d2ff'];
         let explosions = 0;
         
-        // Disparar 5 oleadas de fuegos para hacer los "35"
+        // 5 explosiones (7 partículas cada una = 35 partículas totales)
         const interval = setInterval(() => {
             if(explosions >= 5) {
                 clearInterval(interval);
@@ -349,34 +367,33 @@
             }
             createFireworkBurst(colors[explosions % colors.length]);
             explosions++;
-        }, 600);
+        }, 500);
     }
 
     function createFireworkBurst(color) {
-        const xCenter = document.getElementById('castle').offsetLeft + 40;
-        const yCenter = 150; // Altura en el cielo
+        const xCenter = 305; // Centro del castillo
+        const yCenter = 160; 
 
-        // 7 partículas por explosión (7 x 5 oleadas = 35 partículas totales)
         for(let i=0; i<7; i++) { 
             const f = document.createElement('div');
             f.className = 'firework';
             f.style.backgroundColor = color;
-            f.style.boxShadow = `0 0 8px ${color}`;
+            f.style.boxShadow = `0 0 10px ${color}`;
             f.style.left = xCenter + 'px';
             f.style.bottom = yCenter + 'px';
             stage.appendChild(f);
             
             const angle = (Math.PI * 2 / 7) * i;
-            const dist = 80 + Math.random() * 40;
+            const dist = 70 + Math.random() * 30;
             const tx = Math.cos(angle) * dist;
             const ty = Math.sin(angle) * dist;
 
             f.animate([
                 { transform: 'translate(0, 0) scale(1)', opacity: 1 },
                 { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
-            ], { duration: 1200 + Math.random() * 500, easing: 'ease-out', fill: 'forwards' });
+            ], { duration: 1000 + Math.random() * 500, easing: 'ease-out', fill: 'forwards' });
             
-            setTimeout(() => f.remove(), 2000);
+            setTimeout(() => f.remove(), 1500);
         }
     }
 
@@ -390,19 +407,18 @@
             const diff = target - now;
             
             if(diff <= 0) {
-                document.getElementById('countdown').innerHTML = "¡EL DÍA HA LLEGADO! ¡FELICIDADES!";
+                document.getElementById('countdown').innerHTML = "¡SISTEMA ACTUALIZADO AL 100%!";
                 return;
             }
 
             const h = Math.floor(diff / 3600000);
             const m = Math.floor((diff % 3600000) / 60000);
             const s = Math.floor((diff % 60000) / 1000);
-            document.getElementById('countdown').innerHTML = `RELOJ INTERNO: ${h}h ${m}m ${s}s PARA MEDIA NOCHE`;
+            document.getElementById('countdown').innerHTML = `RELOJ INTERNO: ${h}h ${m}m ${s}s`;
         }, 1000);
     }
 
-    // Iniciar secuencia automáticamente
-    setTimeout(printLogs, 500);
+    setTimeout(printLogs, 300);
 </script>
 
 </body>
