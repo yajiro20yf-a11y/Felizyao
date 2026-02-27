@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acceso Privado</title>
+
+<style>
+body{
+    margin:0;
+    padding:0;
+    background: linear-gradient(to right, #141E30, #243B55);
+    font-family: Arial, sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    color:white;
+    text-align:center;
+}
+
+.contenedor{
+    background: rgba(0,0,0,0.6);
+    padding:40px;
+    border-radius:15px;
+    width:90%;
+    max-width:400px;
+}
+
+input{
+    padding:10px;
+    width:80%;
+    margin-top:15px;
+    border-radius:8px;
+    border:none;
+}
+
+button{
+    margin-top:20px;
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    background:#00c6ff;
+    color:white;
+    cursor:pointer;
+}
+
+#mensaje{
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="contenedor" id="login">
+<h2>🔐 Acceso Privado</h2>
+<p>Introduce la contraseña</p>
+<input type="password" id="clave">
+<br>
+<button onclick="verificar()">Entrar</button>
+</div>
+
+<div class="contenedor" id="mensaje">
+<h1>🔥 FELIZ CUMPLEAÑOS YAIR 🔥</h1>
+<p>
+Hoy celebras disciplina, crecimiento y enfoque.  
+Cada madrugada entrenando, cada partido jugado,  
+cada meta construida… te acerca a tu mejor versión.  
+
+Sigue avanzando. 🚀
+</p>
+</div>
+
+<script>
+function verificar(){
+    var clave = document.getElementById("clave").value;
+    if(clave === "Yair2026"){
+        document.getElementById("login").style.display = "none";
+        document.getElementById("mensaje").style.display = "block";
+    } else {
+        alert("Contraseña incorrecta");
+    }
+}
+</script>
+
+</body>
+</html>
