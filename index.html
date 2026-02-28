@@ -3,404 +3,221 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yajiro_OS_v37_Cinematic</title>
+<title>Yajiro Olympic Circus Mode</title>
 
 <style>
-:root {
-    --mac-bg: #121212;
-    --mac-font: #00ff41;
-    --sky-night: linear-gradient(to bottom, #001133 0%, #000000 100%);
+body{
+margin:0;
+overflow:hidden;
+background:radial-gradient(circle at center,#1a0033,#000);
+font-family:Arial,Helvetica,sans-serif;
 }
 
-body {
-    background-color: #050505;
-    color: var(--mac-font);
-    font-family: 'Courier New', monospace;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    overflow: hidden;
-}
-
-#terminal {
-    width: 95%;
-    max-width: 900px;
-    height: 600px;
-    background: var(--mac-bg);
-    border-radius: 8px;
-    box-shadow: 0 0 50px rgba(0,255,65,0.15);
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #333;
-}
-
-#header {
-    background: #2a2a2a;
-    padding: 10px 15px;
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #000;
-}
-
-.dot { width:12px;height:12px;border-radius:50%;margin-right:8px;}
-.red{background:#ff5f56;}
-.yellow{background:#ffbd2e;}
-.green{background:#27c93f;}
-
-#content {
-    padding:20px;
-    flex-grow:1;
-    display:flex;
-    flex-direction:column;
-}
-
-@keyframes blink { 50% { opacity:0; } }
-
-/* ============================= */
 /* ESCENARIO */
-/* ============================= */
-
-#stage {
-    position:relative;
-    height:250px;
-    margin-top:20px;
-    background:var(--sky-night);
-    display:none;
-    border-radius:5px;
-    overflow:hidden;
+#arena{
+position:relative;
+width:100vw;
+height:100vh;
+overflow:hidden;
 }
 
-/* ============================= */
-/* MÁSTIL PREMIUM */
-/* ============================= */
-
-#pole {
-    position:absolute;
-    width:8px;
-    height:190px;
-    left:230px;
-    bottom:0;
-    border-radius:4px;
-    background:linear-gradient(to right,#888,#ddd,#aaa,#666);
-    box-shadow:0 0 10px rgba(255,255,255,0.2);
+/* Número 35 fondo */
+#bg35{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+font-size:220px;
+font-weight:bold;
+color:#222;
+opacity:0;
+transition:1.5s;
+text-shadow:0 0 40px #ffae00;
 }
 
-.pole-top{
-    position:absolute;
-    width:18px;
-    height:18px;
-    background:radial-gradient(circle at 30% 30%,#fff,#ffd700 70%);
-    border-radius:50%;
-    top:-9px;
-    left:-5px;
-    box-shadow:0 0 10px #ffd700;
+/* Corredor */
+#runner{
+position:absolute;
+bottom:100px;
+left:-120px;
+font-size:60px;
+transition:transform .2s;
 }
 
-/* Bandera */
-
-#flag {
-    position:absolute;
-    width:40px;
-    height:28px;
-    left:190px;
-    bottom:160px;
-    background:linear-gradient(135deg,#00ff41,#00aa2f);
-    clip-path:polygon(0 0,100% 15%,90% 50%,100% 85%,0 100%);
-    box-shadow:0 0 12px rgba(0,255,65,0.6);
-    animation:flagWave 1.5s ease-in-out infinite;
+/* Ticket */
+#ticket{
+position:absolute;
+bottom:150px;
+left:-120px;
+font-size:18px;
+color:#fff;
+background:#c62828;
+padding:5px 8px;
+border-radius:4px;
+font-weight:bold;
 }
 
-@keyframes flagWave {
-    0%,100% { transform:skewY(0deg); }
-    50% { transform:skewY(4deg); }
+/* Antorcha */
+#torch{
+position:absolute;
+font-size:30px;
 }
 
-/* ============================= */
-/* CASTILLO PREMIUM */
-/* ============================= */
-
-#castle {
-    position:absolute;
-    left:270px;
-    bottom:0;
-    width:110px;
-    height:90px;
-    background:
-        repeating-linear-gradient(
-            to right,
-            #666 0px,
-            #666 12px,
-            #5a5a5a 12px,
-            #5a5a5a 24px
-        );
-    border:3px solid #222;
-    box-shadow:
-        inset 0 0 20px rgba(0,0,0,0.6),
-        0 0 20px rgba(0,0,0,0.4);
+/* Fuego animado */
+@keyframes flame{
+0%{transform:scale(1);}
+50%{transform:scale(1.2);}
+100%{transform:scale(1);}
 }
 
-/* Torres */
-#castle::before,
-#castle::after {
-    content:"";
-    position:absolute;
-    bottom:0;
-    width:35px;
-    height:120px;
-    background:
-        repeating-linear-gradient(
-            to right,
-            #777 0px,
-            #777 10px,
-            #666 10px,
-            #666 20px
-        );
-    border:3px solid #222;
-    box-shadow:inset 0 0 15px rgba(0,0,0,0.6);
+/* Ballestas */
+.crossbow{
+position:absolute;
+bottom:100px;
+font-size:50px;
 }
 
-#castle::before { left:-25px; }
-#castle::after { right:-25px; }
-
-/* Ventanas */
-.castle-window {
-    position:absolute;
-    width:10px;
-    height:18px;
-    background:radial-gradient(circle,#ffea00 0%,#ffae00 70%);
-    border-radius:5px;
-    box-shadow:0 0 8px #ffae00;
+/* Flechas */
+.arrow{
+position:absolute;
+font-size:30px;
 }
 
-.window-left { left:25px; top:25px; }
-.window-right { right:25px; top:25px; }
-
-/* Puerta */
-.castle-door {
-    position:absolute;
-    bottom:0;
-    left:40px;
-    width:30px;
-    height:45px;
-    background:linear-gradient(to bottom,#111,#000);
-    border-radius:15px 15px 0 0;
+/* Copa */
+#cauldron{
+position:absolute;
+right:120px;
+bottom:90px;
+font-size:120px;
 }
 
-/* ============================= */
-/* EFECTO DIGITAL CL!NE */
-/* ============================= */
-
-#digital-scan{
-    position:absolute;
-    width:100%;
-    height:100%;
-    background:repeating-linear-gradient(
-        to bottom,
-        rgba(0,255,65,0.08),
-        rgba(0,255,65,0.08) 2px,
-        transparent 2px,
-        transparent 4px
-    );
-    animation:scanMove 1s linear infinite;
-    display:none;
+/* Fuego copa */
+#bigFlame{
+position:absolute;
+right:150px;
+bottom:210px;
+font-size:80px;
+display:none;
+animation:flame 1s infinite;
 }
 
-@keyframes scanMove{
-    from{background-position:0 0;}
-    to{background-position:0 40px;}
-}
-
-@keyframes glitchSpawn{
-    0%{transform:scale(0);opacity:0;filter:blur(10px);}
-    50%{transform:scale(1.3);filter:blur(2px);}
-    100%{transform:scale(1);opacity:1;filter:blur(0);}
-}
-
-#ghost-x{position:absolute;bottom:0;left:0;}
-#ghost-y{font-size:35px;}
-
-.firework{
-    position:absolute;
-    width:6px;
-    height:6px;
-    border-radius:50%;
-}
-
-#progress-bar{
-    width:0%;
-    height:15px;
-    background:var(--mac-font);
-    transition:width 0.1s linear;
-}
 </style>
 </head>
-
 <body>
 
-<div id="terminal">
-<div id="header">
-<div class="dot red"></div>
-<div class="dot yellow"></div>
-<div class="dot green"></div>
-<span style="color:#aaa;font-size:13px;margin-left:10px;">root@Yajiro-System:~</span>
-</div>
+<div id="arena">
 
-<div id="content">
-<div id="console-output"></div>
+<div id="bg35">35</div>
 
-<div id="progress-bar-container" style="border:1px solid #444;margin-top:10px;display:none;border-radius:3px;overflow:hidden;">
-<div id="progress-bar"></div>
-</div>
+<div id="runner">🏃‍♂️</div>
+<div id="ticket">🎟 34</div>
+<div id="torch">🔥</div>
 
-<div id="stage">
-<div id="digital-scan"></div>
+<div class="crossbow" style="left:30%;">🏹</div>
+<div class="crossbow" style="left:55%;">🏹</div>
 
-<div id="pole"><div class="pole-top"></div></div>
-<div id="flag"></div>
+<div id="cauldron">🏆</div>
+<div id="bigFlame">🔥</div>
 
-<div id="castle">
-<div class="castle-window window-left"></div>
-<div class="castle-window window-right"></div>
-<div class="castle-door"></div>
-</div>
-
-<div id="ghost-x"><div id="ghost-y">👻</div></div>
-</div>
-
-<div id="countdown" style="margin-top:10px;"></div>
-<div id="final-msg" style="text-align:center;margin-top:10px;font-size:22px;color:#fff;"></div>
-</div>
 </div>
 
 <script>
-const output=document.getElementById('console-output');
-const stage=document.getElementById('stage');
-const ghostX=document.getElementById('ghost-x');
-const ghostY=document.getElementById('ghost-y');
-const flag=document.getElementById('flag');
-const progressBar=document.getElementById('progress-bar');
-const barContainer=document.getElementById('progress-bar-container');
 
-const logs=[
-"Iniciando Protocolo_Cumpleaños_v37...",
-"Cargando CL!NE_ENGINE...",
-"Renderizando entorno cinematográfico...",
-"Sistema listo."
-];
+const runner=document.getElementById("runner");
+const ticket=document.getElementById("ticket");
+const torch=document.getElementById("torch");
+const bg35=document.getElementById("bg35");
+const bigFlame=document.getElementById("bigFlame");
 
-let i=0;
-function printLogs(){
-if(i<logs.length){
-output.innerHTML+=`> ${logs[i]}<br>`;
-i++;
-setTimeout(printLogs,500);
-}else{
-barContainer.style.display="block";
-startLoading();
+let pos=-120;
+let jumping=false;
+
+/* Música arcade estilo circo retro */
+function circusSound(){
+const ctx=new (window.AudioContext||window.webkitAudioContext)();
+function beep(freq,duration,time){
+const osc=ctx.createOscillator();
+const gain=ctx.createGain();
+osc.connect(gain);
+gain.connect(ctx.destination);
+osc.frequency.value=freq;
+osc.type="square";
+osc.start(time);
+osc.stop(time+duration);
 }
+let t=ctx.currentTime;
+const notes=[523,659,784,659,523,784,880,784];
+notes.forEach((n,i)=>{
+beep(n,0.15,t+i*0.2);
+});
 }
+circusSound();
 
-function startLoading(){
-let width=0;
-const interval=setInterval(()=>{
-width+=Math.random()*10;
-if(width>100) width=100;
-progressBar.style.width=width+"%";
-if(width>=100){
-clearInterval(interval);
-setTimeout(startAnimation,800);
-}
-},50);
-}
+/* Movimiento corredor */
+function move(){
+pos+=4;
+runner.style.left=pos+"px";
+ticket.style.left=pos+"px";
+torch.style.left=(pos+40)+"px";
+torch.style.bottom=(jumping?180:150)+"px";
 
-async function arcJump(sx,sy,ex,ey,h,d){
-ghostX.animate([{transform:`translateX(${sx}px)`},{transform:`translateX(${ex}px)`}],{duration:d,fill:'forwards'});
-const peak=Math.max(sy,ey)+h;
-const anim=ghostY.animate([
-{transform:`translateY(-${sy}px)`},
-{transform:`translateY(-${peak}px)`},
-{transform:`translateY(-${ey}px)`}
-],{duration:d,fill:'forwards'});
-return anim.finished;
-}
-
-async function startAnimation(){
-stage.style.display="block";
-const scan=document.getElementById("digital-scan");
-scan.style.display="block";
-
-await new Promise(r=>setTimeout(r,1500));
-ghostY.style.animation="glitchSpawn 1.2s ease forwards";
-await new Promise(r=>setTimeout(r,1200));
-scan.style.display="none";
-
-await arcJump(0,0,215,140,120,900);
-
-const slide=900;
-ghostY.animate([{transform:`translateY(-140px)`},{transform:`translateY(0px)`}],{duration:slide,fill:'forwards'});
-flag.animate([{transform:`translateY(0px)`},{transform:`translateY(155px)`}],{duration:slide,fill:'forwards'});
-
-await new Promise(r=>setTimeout(r,slide+200));
-
-await ghostX.animate([
-{transform:`translateX(215px)`,opacity:1},
-{transform:`translateX(285px)`,opacity:0}
-],{duration:800,fill:'forwards'}).finished;
-
-fireworksShow();
-
-document.getElementById('final-msg').innerHTML=
-"⚡ SISTEMA EVOLUCIONADO ⚡<br>" +
-"<span style='font-size:26px;'>¡FELIZ CUMPLEAÑOS YAJIRO!</span><br>" +
-"<span style='font-size:16px;color:#00ff41;'>[LEVEL 35: CL!NE MODE ACTIVATED]</span>";
-
-startCountdown();
-}
-
-function fireworksShow(){
-const colors=['#00ff41','#ffbd2e','#ff5f56','#ffd700','#00d2ff'];
-for(let e=0;e<5;e++){
-setTimeout(()=>{
-for(let j=0;j<7;j++){
-const f=document.createElement('div');
-f.className='firework';
-f.style.backgroundColor=colors[e%colors.length];
-f.style.left='305px';
-f.style.bottom='160px';
-stage.appendChild(f);
-const angle=(Math.PI*2/7)*j;
-const dist=70+Math.random()*30;
-const tx=Math.cos(angle)*dist;
-const ty=Math.sin(angle)*dist;
-f.animate([{transform:'translate(0,0)',opacity:1},{transform:`translate(${tx}px,${ty}px)`,opacity:0}],{duration:1000,fill:'forwards'});
-setTimeout(()=>f.remove(),1200);
-}
-},e*500);
-}
-}
-
-function startCountdown(){
-const target=new Date();
-target.setDate(target.getDate()+1);
-target.setHours(0,0,0,0);
-
-setInterval(()=>{
-const now=new Date();
-const diff=target-now;
-if(diff<=0){
-document.getElementById('countdown').innerHTML="¡SISTEMA ACTUALIZADO!";
+if(pos>window.innerWidth-300){
+ignite();
 return;
 }
-const h=Math.floor(diff/3600000);
-const m=Math.floor((diff%3600000)/60000);
-const s=Math.floor((diff%60000)/1000);
-document.getElementById('countdown').innerHTML=`RELOJ: ${h}h ${m}m ${s}s`;
-},1000);
+
+requestAnimationFrame(move);
 }
 
-setTimeout(printLogs,500);
+/* Saltar */
+function jump(){
+if(jumping) return;
+jumping=true;
+runner.style.transform="translateY(-80px)";
+setTimeout(()=>{
+runner.style.transform="translateY(0px)";
+jumping=false;
+},400);
+}
+
+/* Ballestas disparo */
+function shoot(x){
+const arrow=document.createElement("div");
+arrow.className="arrow";
+arrow.innerHTML="➶";
+arrow.style.left=x+"px";
+arrow.style.bottom="130px";
+document.getElementById("arena").appendChild(arrow);
+
+let aPos=x;
+function fly(){
+aPos-=6;
+arrow.style.left=aPos+"px";
+if(aPos<0){arrow.remove();return;}
+requestAnimationFrame(fly);
+}
+fly();
+}
+
+/* Activar disparos */
+setTimeout(()=>shoot(window.innerWidth*0.3),1500);
+setTimeout(()=>jump(),1400);
+
+setTimeout(()=>shoot(window.innerWidth*0.55),3200);
+setTimeout(()=>jump(),3100);
+
+/* Encender copa */
+function ignite(){
+bigFlame.style.display="block";
+document.body.style.background="radial-gradient(circle,#ffae00,#000)";
+bg35.style.opacity=1;
+bg35.style.color="#ffae00";
+bg35.style.textShadow="0 0 60px #ffae00,0 0 120px #ff4500";
+}
+
+/* Iniciar */
+setTimeout(move,500);
+
 </script>
 
 </body>
