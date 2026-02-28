@@ -3,266 +3,221 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yajiro - Nivel 35</title>
+<title>YAJIRO_OS Upgrade</title>
 
 <style>
 body{
     margin:0;
-    background: radial-gradient(circle at center, #1a0033, #000);
-    overflow:hidden;
-    font-family: monospace;
-    color:#00ff88;
-}
-
-/* TERMINAL */
-#terminal{
-    position:absolute;
-    top:0;
-    width:100%;
-    background:black;
-    padding:15px;
-    box-shadow:0 0 15px #00ff88;
-    z-index:100;
-    font-size:15px;
-}
-
-#progressBar{
-    margin-top:10px;
-    height:10px;
-    background:#003322;
-}
-
-#progress{
-    height:100%;
-    width:0%;
-    background:#00ff88;
-}
-
-/* BOTÓN */
-#startBtn{
-    position:absolute;
-    top:45%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    padding:15px 35px;
-    font-size:20px;
-    background:#ffcc00;
-    border:none;
-    cursor:pointer;
-    display:none;
-    box-shadow:0 0 20px #ffcc00;
-    font-weight:bold;
-}
-
-/* ESCENA */
-#scene{
-    position:absolute;
-    bottom:0;
-    width:100%;
-    height:70%;
-}
-
-/* TORRE */
-#stack{
-    position:absolute;
-    bottom:20px;
-    right:15%;
-    width:120px;
+    background:#1e1e1e;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    color:#d0d0d0;
     display:flex;
-    flex-direction:column-reverse;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+#terminal-window{
+    width:900px;
+    max-width:95%;
+    background:#2b2b2b;
+    border-radius:10px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.6);
+    overflow:hidden;
+}
+
+#title-bar{
+    background:#3c3c3c;
+    padding:10px;
+    display:flex;
     align-items:center;
 }
 
-.block{
-    width:70px;
-    height:40px;
-    background:#ffcc00;
-    margin:2px;
-    border:3px solid #aa8800;
-    text-align:center;
-    line-height:40px;
+.circle{
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    margin-right:8px;
+}
+
+.red{background:#ff5f56;}
+.yellow{background:#ffbd2e;}
+.green{background:#27c93f;}
+
+#terminal{
+    padding:20px;
+    height:500px;
+    overflow-y:auto;
+    font-size:15px;
+    line-height:1.6;
+}
+
+.prompt{
+    color:#00ff9c;
+}
+
+.cursor{
+    display:inline-block;
+    width:10px;
+    background:#d0d0d0;
+    animation:blink 1s infinite;
+}
+
+@keyframes blink{
+    0%{opacity:1;}
+    50%{opacity:0;}
+    100%{opacity:1;}
+}
+
+.progress-container{
+    margin-top:15px;
+    background:#111;
+    height:12px;
+    border-radius:6px;
+    overflow:hidden;
+}
+
+.progress-bar{
+    height:100%;
+    width:0%;
+    background:#00ff9c;
+    transition:width .3s;
+}
+
+.status-ok{
+    color:#27c93f;
+}
+
+.status-info{
+    color:#00ff9c;
+}
+
+.status-warning{
+    color:#ffbd2e;
+}
+
+.status-final{
+    color:#ffffff;
     font-weight:bold;
-    color:#000;
-}
-
-/* PERSONAJE */
-#character{
-    position:absolute;
-    bottom:20px;
-    left:-120px;
-    text-align:center;
-    transition:transform .3s;
-}
-
-#guy{
-    font-size:50px;
-}
-
-#cube{
-    width:70px;
-    height:40px;
-    background:#ffcc00;
-    border:3px solid #aa8800;
-    line-height:40px;
-    font-weight:bold;
-    color:#000;
-    margin:auto;
-}
-
-/* MENSAJE FINAL */
-#finalMessage{
-    position:absolute;
-    top:50%;
-    width:100%;
-    text-align:center;
-    font-size:40px;
-    color:#ffcc00;
-    opacity:0;
-    transition:2s;
-    text-shadow:0 0 20px #ffcc00;
 }
 </style>
 </head>
-
 <body>
 
-<div id="terminal">
-YAJIRO_OS v3.5<br>
----------------------------------------<br>
-<div id="logs"></div>
-<div id="progressBar"><div id="progress"></div></div>
-</div>
-
-<button id="startBtn">🎁 Iniciar Entrega</button>
-
-<div id="scene">
-    <div id="stack"></div>
-
-    <div id="character">
-        <div id="cube">35</div>
-        <div id="guy">🧍‍♂️</div>
+<div id="terminal-window">
+    <div id="title-bar">
+        <div class="circle red"></div>
+        <div class="circle yellow"></div>
+        <div class="circle green"></div>
     </div>
-</div>
-
-<div id="finalMessage">
-🎉 NIVEL 35 DESBLOQUEADO 🎉<br>
-Yajiro no suma años… acumula niveles.
+    <div id="terminal"></div>
 </div>
 
 <script>
-const logsEl = document.getElementById("logs");
-const progressEl = document.getElementById("progress");
-const startBtn = document.getElementById("startBtn");
-const stack = document.getElementById("stack");
-const character = document.getElementById("character");
-const cube = document.getElementById("cube");
-const finalMessage = document.getElementById("finalMessage");
+const terminal = document.getElementById("terminal");
 
-/* TERMINAL LOGS */
-const logs = [
-"> Usuario detectado: Yajiro",
-"> Edad actual: 34",
-"> Buscando actualización...",
-"> Instalando módulo: Nivel_35.exe",
-"> Cargando disciplina...",
-"> Cargando experiencia...",
-"> Cargando familia...",
-"> Cargando batallas superadas...",
-"> Preparando actualización...",
-"> Sistema listo para recibir cumpleaños."
+const lines = [
+"Last login: system boot sequence initiated",
+"",
+"YAJIRO_OS Kernel 34.0.0 loaded successfully.",
+"",
+"> Checking for updates...",
+"> Update found: YAJIRO_OS_V35.pkg",
+"",
+"> Preparing system migration from V34 → V35",
+"> Backing up core modules...",
+"   - Experiencia acumulada ............. [OK]",
+"   - Disciplina instalada .............. [OK]",
+"   - Aprendizajes registrados .......... [OK]",
+"   - Errores convertidos en mejoras .... [OK]",
+"   - Memoria emocional sincronizada .... [OK]",
+"",
+"> Verifying integrity of version V34...",
+"   - Stability ......................... [OK]",
+"   - Performance ....................... [OK]",
+"   - Growth index ...................... [OK]",
+"",
+"> Installing YAJIRO_OS_V35...",
 ];
 
-let logIndex = 0;
-let progress = 0;
+let index = 0;
 
-function typeLogs(){
-    if(logIndex < logs.length){
-        logsEl.innerHTML += logs[logIndex] + "<br>";
-        logIndex++;
-        setTimeout(typeLogs, 600);
+function typeLine() {
+    if(index < lines.length){
+        const line = document.createElement("div");
+        line.innerHTML = lines[index];
+        terminal.appendChild(line);
+        terminal.scrollTop = terminal.scrollHeight;
+        index++;
+        setTimeout(typeLine, 400);
+    } else {
+        startProgress();
     }
 }
 
-function loadBar(){
-    let interval = setInterval(()=>{
-        progress+=2;
-        progressEl.style.width = progress + "%";
-        if(progress>=100){
+function startProgress(){
+    const progressContainer = document.createElement("div");
+    progressContainer.className = "progress-container";
+    const progressBar = document.createElement("div");
+    progressBar.className = "progress-bar";
+    progressContainer.appendChild(progressBar);
+    terminal.appendChild(progressContainer);
+
+    let progress = 0;
+
+    const interval = setInterval(()=>{
+        progress += 2;
+        progressBar.style.width = progress + "%";
+        if(progress >= 100){
             clearInterval(interval);
-            startBtn.style.display="block";
+            finishInstallation();
         }
-    },60);
+    },80);
 }
 
-typeLogs();
-loadBar();
+function finishInstallation(){
+    const finishLines = [
+"",
+"> Finalizing configuration...",
+"> Optimizing internal systems...",
+"> Recalibrating vision module...",
+"> Expanding capacity limits...",
+"",
+"System migration complete.",
+"",
+"YAJIRO_OS is now running version 35.0.0",
+"",
+"V35 successfully installed.",
+"",
+"All lived experiences from V34 have been integrated.",
+"",
+"System status: STABLE",
+"Performance mode: ENHANCED",
+"Growth protocol: ACTIVE",
+"",
+"Ready."
+];
 
-/* CREAR TORRE HASTA 34 */
-for(let i=1;i<=34;i++){
-    let block = document.createElement("div");
-    block.className="block";
-    block.innerText=i;
-    stack.appendChild(block);
-}
-
-/* MOVIMIENTO */
-let pos=-120;
-
-function move(){
-    pos+=2;
-    character.style.left=pos+"px";
-
-    if(pos>window.innerWidth*0.55){
-        placeCube();
-        return;
+    let i = 0;
+    function printFinish(){
+        if(i < finishLines.length){
+            const line = document.createElement("div");
+            line.innerHTML = finishLines[i];
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+            i++;
+            setTimeout(printFinish, 500);
+        } else {
+            const prompt = document.createElement("div");
+            prompt.innerHTML = "<span class='prompt'>Yajiro@system:~$</span> <span class='cursor'></span>";
+            terminal.appendChild(prompt);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
     }
-    requestAnimationFrame(move);
+    printFinish();
 }
 
-function placeCube(){
-    character.style.transform="translateY(-30px)";
-    setTimeout(()=>{
-        character.style.transform="translateY(0)";
-        stack.appendChild(cube);
-        cube.classList.add("block");
-        cube.style.background="#00ff88";
-        cube.style.boxShadow="0 0 20px #00ff88";
-        showFinal();
-        playSound();
-    },400);
-}
-
-function showFinal(){
-    setTimeout(()=>{
-        finalMessage.style.opacity=1;
-    },800);
-}
-
-/* SONIDO LEVEL UP */
-function playSound(){
-    const ctx=new (window.AudioContext||window.webkitAudioContext)();
-    function tone(freq,time){
-        const osc=ctx.createOscillator();
-        const gain=ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.frequency.value=freq;
-        osc.type="square";
-        gain.gain.setValueAtTime(0.05,ctx.currentTime);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime+time);
-    }
-    tone(523,0.15);
-    setTimeout(()=>tone(659,0.15),150);
-    setTimeout(()=>tone(784,0.2),300);
-}
-
-/* INICIAR */
-startBtn.addEventListener("click",()=>{
-    startBtn.style.display="none";
-    document.getElementById("terminal").style.display="none";
-    move();
-});
+typeLine();
 </script>
 
 </body>
