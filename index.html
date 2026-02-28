@@ -3,118 +3,133 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yajiro Olympic Circus Mode</title>
+<title>Yajiro Olympic Athletics Mode</title>
 
 <style>
 body{
 margin:0;
 overflow:hidden;
-background:radial-gradient(circle at center,#1a0033,#000);
+background:#000;
 font-family:Arial,Helvetica,sans-serif;
+color:#00ff88;
 }
 
-/* ESCENARIO */
+/* TERMINAL */
+#terminal{
+position:absolute;
+width:100%;
+height:100%;
+background:#000;
+padding:40px;
+box-sizing:border-box;
+z-index:10;
+}
+
 #arena{
-position:relative;
-width:100vw;
-height:100vh;
+position:absolute;
+width:100%;
+height:100%;
+display:none;
 overflow:hidden;
+background:radial-gradient(circle at center,#111,#000);
 }
 
-/* Número 35 fondo */
+/* FONDO 35 */
 #bg35{
 position:absolute;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
-font-size:220px;
+font-size:250px;
 font-weight:bold;
-color:#222;
 opacity:0;
+color:#ffae00;
+text-shadow:0 0 60px #ffae00,0 0 120px #ff4500;
 transition:1.5s;
-text-shadow:0 0 40px #ffae00;
 }
 
-/* Corredor */
+/* CORREDOR */
 #runner{
 position:absolute;
-bottom:100px;
-left:-120px;
-font-size:60px;
-transition:transform .2s;
+bottom:120px;
+left:-150px;
+font-size:70px;
+transition:transform .3s;
 }
 
-/* Ticket */
-#ticket{
+/* Número 34 camiseta */
+#number{
 position:absolute;
 bottom:150px;
-left:-120px;
-font-size:18px;
-color:#fff;
-background:#c62828;
-padding:5px 8px;
-border-radius:4px;
+left:-130px;
+font-size:20px;
 font-weight:bold;
+color:#fff;
+background:#d32f2f;
+padding:5px 8px;
+border-radius:5px;
 }
 
 /* Antorcha */
 #torch{
 position:absolute;
-font-size:30px;
+font-size:35px;
+animation:flame 1s infinite;
 }
 
-/* Fuego animado */
 @keyframes flame{
 0%{transform:scale(1);}
 50%{transform:scale(1.2);}
 100%{transform:scale(1);}
 }
 
-/* Ballestas */
-.crossbow{
+/* Vallas */
+.hurdle{
 position:absolute;
-bottom:100px;
-font-size:50px;
-}
-
-/* Flechas */
-.arrow{
-position:absolute;
-font-size:30px;
+bottom:120px;
+font-size:60px;
 }
 
 /* Copa */
 #cauldron{
 position:absolute;
-right:120px;
-bottom:90px;
-font-size:120px;
+right:150px;
+bottom:110px;
+font-size:140px;
 }
 
-/* Fuego copa */
 #bigFlame{
 position:absolute;
-right:150px;
-bottom:210px;
-font-size:80px;
+right:180px;
+bottom:240px;
+font-size:100px;
 display:none;
 animation:flame 1s infinite;
 }
 
+/* Fuegos */
+.firework{
+position:absolute;
+width:6px;
+height:6px;
+border-radius:50%;
+}
 </style>
 </head>
 <body>
+
+<div id="terminal"></div>
 
 <div id="arena">
 
 <div id="bg35">35</div>
 
 <div id="runner">🏃‍♂️</div>
-<div id="ticket">🎟 34</div>
+<div id="number">34</div>
 <div id="torch">🔥</div>
 
-<div class="crossbow" style="left:30%;">🏹</div>
-<div class="crossbow" style="left:55%;">🏹</div>
+<div class="hurdle" style="left:35%;">🚧</div>
+<div class="hurdle" style="left:60%;">🚧</div>
 
 <div id="cauldron">🏆</div>
 <div id="bigFlame">🔥</div>
@@ -122,46 +137,75 @@ animation:flame 1s infinite;
 </div>
 
 <script>
-
+const terminal=document.getElementById("terminal");
+const arena=document.getElementById("arena");
 const runner=document.getElementById("runner");
-const ticket=document.getElementById("ticket");
+const number=document.getElementById("number");
 const torch=document.getElementById("torch");
 const bg35=document.getElementById("bg35");
 const bigFlame=document.getElementById("bigFlame");
 
-let pos=-120;
+let pos=-150;
 let jumping=false;
 
-/* Música arcade estilo circo retro */
-function circusSound(){
-const ctx=new (window.AudioContext||window.webkitAudioContext)();
-function beep(freq,duration,time){
-const osc=ctx.createOscillator();
-const gain=ctx.createGain();
-osc.connect(gain);
-gain.connect(ctx.destination);
-osc.frequency.value=freq;
-osc.type="square";
-osc.start(time);
-osc.stop(time+duration);
+/* MENSAJE TERMINAL */
+const logs=[
+"Iniciando Protocolo_Olimpico_v41...",
+"Cargando pista de atletismo...",
+"Asignando corredor ID #34...",
+"Preparando antorcha ceremonial...",
+"Listo para encendido oficial..."
+];
+
+let i=0;
+function printLogs(){
+if(i<logs.length){
+terminal.innerHTML+=`> ${logs[i]}<br>`;
+i++;
+setTimeout(printLogs,600);
+}else{
+terminal.innerHTML+="<br><br>CLICK PARA INICIAR CEREMONIA";
+terminal.onclick=startCeremony;
 }
-let t=ctx.currentTime;
-const notes=[523,659,784,659,523,784,880,784];
+}
+printLogs();
+
+/* AUDIO ARCADE CIRCUS */
+let audioCtx;
+function playMusic(){
+audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+let t=audioCtx.currentTime;
+const notes=[523,659,784,659,523,784,880,784,659,523];
 notes.forEach((n,i)=>{
-beep(n,0.15,t+i*0.2);
+const osc=audioCtx.createOscillator();
+const gain=audioCtx.createGain();
+osc.connect(gain);
+gain.connect(audioCtx.destination);
+osc.frequency.value=n;
+osc.type="square";
+gain.gain.setValueAtTime(0.2,t+i*0.25);
+osc.start(t+i*0.25);
+osc.stop(t+i*0.25+0.2);
 });
 }
-circusSound();
 
-/* Movimiento corredor */
+/* INICIAR */
+function startCeremony(){
+terminal.style.display="none";
+arena.style.display="block";
+playMusic();
+move();
+}
+
+/* Movimiento */
 function move(){
-pos+=4;
+pos+=5;
 runner.style.left=pos+"px";
-ticket.style.left=pos+"px";
-torch.style.left=(pos+40)+"px";
-torch.style.bottom=(jumping?180:150)+"px";
+number.style.left=(pos+20)+"px";
+torch.style.left=(pos+60)+"px";
+torch.style.bottom=(jumping?200:170)+"px";
 
-if(pos>window.innerWidth-300){
+if(pos>window.innerWidth-350){
 ignite();
 return;
 }
@@ -173,51 +217,48 @@ requestAnimationFrame(move);
 function jump(){
 if(jumping) return;
 jumping=true;
-runner.style.transform="translateY(-80px)";
+runner.style.transform="translateY(-100px)";
 setTimeout(()=>{
 runner.style.transform="translateY(0px)";
 jumping=false;
-},400);
+},500);
 }
 
-/* Ballestas disparo */
-function shoot(x){
-const arrow=document.createElement("div");
-arrow.className="arrow";
-arrow.innerHTML="➶";
-arrow.style.left=x+"px";
-arrow.style.bottom="130px";
-document.getElementById("arena").appendChild(arrow);
-
-let aPos=x;
-function fly(){
-aPos-=6;
-arrow.style.left=aPos+"px";
-if(aPos<0){arrow.remove();return;}
-requestAnimationFrame(fly);
-}
-fly();
-}
-
-/* Activar disparos */
-setTimeout(()=>shoot(window.innerWidth*0.3),1500);
-setTimeout(()=>jump(),1400);
-
-setTimeout(()=>shoot(window.innerWidth*0.55),3200);
-setTimeout(()=>jump(),3100);
+/* Activar saltos */
+setTimeout(()=>jump(),1800);
+setTimeout(()=>jump(),3500);
 
 /* Encender copa */
 function ignite(){
 bigFlame.style.display="block";
-document.body.style.background="radial-gradient(circle,#ffae00,#000)";
+arena.style.background="radial-gradient(circle,#ffae00,#000)";
 bg35.style.opacity=1;
-bg35.style.color="#ffae00";
-bg35.style.textShadow="0 0 60px #ffae00,0 0 120px #ff4500";
+fireworks();
 }
 
-/* Iniciar */
-setTimeout(move,500);
-
+/* Fuegos */
+function fireworks(){
+for(let e=0;e<6;e++){
+setTimeout(()=>{
+for(let j=0;j<10;j++){
+const f=document.createElement("div");
+f.className="firework";
+f.style.backgroundColor=["#ff0","#f00","#0ff","#ff6600"][j%4];
+f.style.left="50%";
+f.style.top="40%";
+arena.appendChild(f);
+const angle=(Math.PI*2/10)*j;
+const dist=150;
+const tx=Math.cos(angle)*dist;
+const ty=Math.sin(angle)*dist;
+f.animate([{transform:"translate(0,0)",opacity:1},
+{transform:`translate(${tx}px,${ty}px)`,opacity:0}],
+{duration:1000,fill:"forwards"});
+setTimeout(()=>f.remove(),1000);
+}
+},e*400);
+}
+}
 </script>
 
 </body>
