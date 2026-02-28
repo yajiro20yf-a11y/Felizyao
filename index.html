@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yajiro 35 - Olympic Birthday</title>
+    <title>Yajiro 35 - Olympic Birthday (Fixed)</title>
 
     <style>
         body {
@@ -20,7 +20,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             color: #00ff88;
             padding: 15px;
             font-family: monospace;
@@ -28,6 +28,7 @@
             box-shadow: 0 2px 15px #00ff88;
             z-index: 100;
             border-bottom: 2px solid #00ff88;
+            box-sizing: border-box;
         }
 
         /* Arena */
@@ -54,6 +55,8 @@
             font-size: 70px;
             bottom: 0;
             left: 0;
+            /* SOLUCIÓN: Voltear el emoji para que mire a la derecha */
+            transform: scaleX(-1);
         }
 
         #jersey {
@@ -208,6 +211,7 @@
         "> Identidad verificada: Yair / Yajiro",
         "> Edad actual: 34 años. Condición: Óptima.",
         "> Antorcha encendida. Pista despejada.",
+        "> Orientando corredor hacia la meta (Derecha)... [OK]",
         "> Preparando salto a Nivel 35..."
     ];
 
@@ -216,7 +220,8 @@
         if (logIdx < logs.length) {
             terminal.innerHTML += logs[logIdx] + "<br>";
             logIdx++;
-            setTimeout(typeTerminal, 800);
+            terminal.scrollTop = terminal.scrollHeight; // Auto-scroll
+            setTimeout(typeTerminal, 700);
         } else {
             terminal.innerHTML += "> [LISTO] Haz clic en iniciar.<br>";
             startBtn.style.display = "block";
@@ -231,21 +236,23 @@
 
     /* AUDIO (Melodía de victoria) */
     function playMusic() {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        function tone(freq, duration, time) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.frequency.value = freq;
-            osc.type = "square";
-            gain.gain.setValueAtTime(0.1, time);
-            osc.start(time);
-            osc.stop(time + duration);
-        }
-        let t = ctx.currentTime;
-        const melody = [523, 659, 784, 880, 784, 659, 523];
-        melody.forEach((n, i) => tone(n, 0.15, t + i * 0.2));
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            function tone(freq, duration, time) {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = freq;
+                osc.type = "square";
+                gain.gain.setValueAtTime(0.05, time);
+                osc.start(time);
+                osc.stop(time + duration);
+            }
+            let t = ctx.currentTime;
+            const melody = [523, 659, 784, 880, 784, 659, 523];
+            melody.forEach((n, i) => tone(n, 0.15, t + i * 0.2));
+        } catch(e) { console.log("Audio no soportado"); }
     }
 
     /* Movimiento Inteligente */
@@ -259,8 +266,8 @@
         // Detector de colisión con vallas para saltar
         hurdles.forEach(hurdle => {
             let hPos = hurdle.offsetLeft;
-            // Si está a 80px de la valla y no está saltando, salta
-            if (pos > hPos - 80 && pos < hPos && !jumping) {
+            // Si está cerca de la valla y no está saltando, salta
+            if (pos > hPos - 100 && pos < hPos && !jumping) {
                 jump();
             }
         });
@@ -275,19 +282,25 @@
 
     /* Salto del atleta completo */
     function jump() {
+        if (jumping) return;
         jumping = true;
-        athlete.style.transform = "translateY(-120px)"; // Altura del salto
+        athlete.style.transform = "translateY(-130px)"; // Altura del salto
         setTimeout(() => {
             athlete.style.transform = "translateY(0px)";
-            setTimeout(() => { jumping = false; }, 100); // Cooldown del salto
+            // Cooldown ligeramente más largo para evitar saltos dobles accidentales
+            setTimeout(() => { jumping = false; }, 200); 
         }, 400); // Tiempo en el aire
     }
 
     /* Encendido final y cambio al Nivel 35 */
     function ignite() {
+        cancelAnimationFrame(runAnimationId);
         bigFlame.style.display = "block";
         document.getElementById("jersey").innerText = "35"; // ¡Sube de nivel!
         
+        // Detener el movimiento horizontal
+        athlete.style.left = pos + "px";
+
         bg35.style.opacity = 1;
         bg35.style.textShadow = "0 0 40px #ffae00, 0 0 80px red";
         message.style.opacity = 1;
@@ -314,22 +327,23 @@
             this.color = color;
             this.radius = Math.random() * 3 + 1;
             const angle = Math.random() * Math.PI * 2;
-            const speed = Math.random() * 6 + 2;
+            const speed = Math.random() * 6 + 3;
             this.vx = Math.cos(angle) * speed;
             this.vy = Math.sin(angle) * speed;
             this.alpha = 1;
-            this.decay = Math.random() * 0.02 + 0.01;
-            this.gravity = 0.05;
+            this.decay = Math.random() * 0.02 + 0.015;
+            this.gravity = 0.06;
         }
         update() {
-            this.vx *= 0.98; // Fricción
-            this.vy *= 0.98;
+            this.vx *= 0.97; // Fricción
+            this.vy *= 0.97;
             this.vy += this.gravity;
             this.x += this.vx;
             this.y += this.vy;
             this.alpha -= this.decay;
         }
         draw(ctx) {
+            if (this.alpha <= 0) return;
             ctx.save();
             ctx.globalAlpha = this.alpha;
             ctx.beginPath();
@@ -341,38 +355,39 @@
     }
 
     function animateFireworks() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles = particles.filter(p => p.alpha > 0);
-        particles.forEach(p => { p.update(); p.draw(ctx); });
+        if (particles.length === 0 && message.style.opacity === "1") {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        } else if (particles.length > 0) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles = particles.filter(p => p.alpha > 0);
+            particles.forEach(p => { p.update(); p.draw(ctx); });
+        }
         requestAnimationFrame(animateFireworks);
     }
 
     function createExplosion() {
         const x = Math.random() * canvas.width;
-        const y = Math.random() * (canvas.height / 2); // Explota en la mitad superior
-        const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+        const y = Math.random() * (canvas.height / 2) + 50; // Explota en la mitad superior
+        const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffffff', '#ff9800'];
         const color = colors[Math.floor(Math.random() * colors.length)];
-        for (let i = 0; i < 60; i++) {
+        for (let i = 0; i < 70; i++) {
             particles.push(new Particle(x, y, color));
         }
     }
 
     function launchFireworks() {
         animateFireworks();
-        setInterval(createExplosion, 800);
+        // Explosiones iniciales
+        createExplosion();
+        setTimeout(createExplosion, 300);
+        // Bucle de explosiones
+        setInterval(createExplosion, 900);
     }
 
     /* Evento de Inicio */
     startBtn.addEventListener("click", () => {
         startBtn.style.display = "none";
-        // Pequeño tono de salida
-        const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctxAudio.createOscillator();
-        osc.connect(ctxAudio.destination);
-        osc.frequency.value = 440;
-        osc.start();
-        osc.stop(ctxAudio.currentTime + 0.1);
-
+        playMusic(); // Tono de salida
         setTimeout(move, 500);
     });
 
